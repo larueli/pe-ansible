@@ -9,9 +9,10 @@
   environment:
     http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
     https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
-  name: Installation des paquets de base
-  ansible.builtin.apt:
-    name: "{{ base_packages }}"
-    state: latest
-    update_cache: true
-  become: true
+  tasks:
+    - name: Installation des paquets de base
+      ansible.builtin.apt:
+        name: "{{ base_packages }}"
+        state: latest
+        update_cache: true
+      become: true

@@ -2,7 +2,7 @@
 
 Ce TP sur Ansible est destiné à des étudiants s'intéressant aux notions suivantes : cloud, automatisation, serveurs, provisionning, déploiement.
 
-Il a été conçu et rédigé par [Ivann LARUELLE](https://ivannlaruelle.fr), étudiant en RT à l'UTT en P21, [administrateur du Système d'Information des Associations de l'UNG](https://ung.utt.fr/tech/sia) et encadré par l'enseignante [Samiha AYED](https://recherche.utt.fr/research-directory/samiha-ayed). 
+Il a été conçu et rédigé par [Ivann LARUELLE](https://ivannlaruelle.fr), étudiant en RT à l'UTT en P21, administrateur du [Système d'Information des Associations de l'UNG](https://ung.utt.fr/tech/sia) et encadré par l'enseignante [Samiha AYED](https://recherche.utt.fr/research-directory/samiha-ayed). 
 
 ## Introduction
 
@@ -88,20 +88,20 @@ Il faut se connecter sur eve-ng avec les identifiants fournis par l'enseignant. 
 
 ### Préparation du controller
 
-Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant.
+Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i`.
 
 Il faut ensuite vous authentifier pour accéder à internet. Tapez les deux lignes suivantes en remplaçant par vos identifiants UTT :
 
 ```bash
-export http_proxy=http://identifiant:passe@10.23.0.9:3128
-export https_proxy=http://identifiant:passe@10.23.0.9:3128
+export http_proxy='http://identifiant:passe@10.23.0.9:3128'
+export https_proxy='http://identifiant:passe@10.23.0.9:3128'
 ```
 
 Il faut ensuite installer ansible et sshpass (un outil qui permet à ansible de se connecter via SSH à des machines). SSH est un protocole très connu de connexion à distance et d'ouverture de session à distance, et est activé sur l'immense majorité des serveurs. Sur votre machine, dans un terminal, tapez :
 
 ```bash
-sudo apt-get update 
-sudo apt-get install -y python3 git nano ansible sshpass
+apt-get update 
+apt-get install -y python3 git nano ansible sshpass
 ```
 
 Explications :
@@ -159,6 +159,8 @@ On définit des variables dans l'inventaire. Certaines sont propres à vos besoi
 Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2, puis tapez `ip a sh | grep inet`. Le caractère `|` est composé en appuyant sur Alt Gr + 6. Deux adresse s'affichent normalement, une en 127.0.0.1 qui ne nous intéresse pas, car elle est locale, et une autre en `10.100.X.Y`. Notez bien cette dernière IP.
 
 Si vous allez dans inventory/host_vars/machine1/main.yml, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et dans la variable `mediawiki_url` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
+
+Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les moudles Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes.
 
 #### L'ordre des variables
 
@@ -476,6 +478,6 @@ Relancez le playbook web, reconnectez-vous sur l'URL de machine1 en mettant http
 ## Pour aller plus loin
 
 1. Qu'est-ce qu'Ansible Vault ? Pourquoi et comment l'utiliser ? Essayez de l'utiliser dans le projet actuel.
-2. Quel est l'intérêt d'AWX / Ansible Tower ?
-3. Quels utilisations possibles entre Ansible et un fournisseur cloud (Proxmox, AWS, GCP, ...) ?
-4. Pourquoi Ansible met-il en avant les collections et non plus les rôles dans la distribution de code tout prêt ?
+2. Quelles utilisations possibles entre Ansible et un fournisseur cloud (Proxmox, AWS, GCP, ...) ?
+3. Qu'est-ce qu'Ansible-Lint ? Quel intêrét ?
+3. Quel est l'intérêt d'AWX / Ansible Tower ?
