@@ -28,7 +28,7 @@ php_versions:
   - "7.4"
 
 php_modules:
-  - imagemagick
+  - imagick
 
 base_packages:
   - nano
