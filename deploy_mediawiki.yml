@@ -1,0 +1,33 @@
+---
+- hosts: servers
+  environment:
+    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  gather_facts: true
+
+- hosts: servers
+  environment:
+    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  name: Installation de la base de données
+  include_role:
+    name: "dbserver"
+  become: true
+
+- hosts: servers
+  environment:
+    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  name: Installation de mediawiki
+  include_role:
+    name: "mediawiki"
+  become: true
+
+- hosts: servers
+  environment:
+    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  name: Installation du serveur web
+  include_role:
+    name: "webserver"
+  become: true

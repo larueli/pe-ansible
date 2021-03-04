@@ -1,0 +1,43 @@
+---
+ansible_user: administrateur
+
+databases:
+  - name: "mediawiki-db"
+    encoding: "utf8"
+
+databases_users:
+  - name: "mediawiki-db-user"
+    password: "superSecretPassword"
+
+ports_http:
+  - "8080"
+  - "8443"
+
+virtualhosts:
+  - documentroot: "/var/www/html/mediawiki"
+    port: "8080"
+
+mediawiki_db:
+  name: "mediawiki-db"
+  username: "mediawiki-db-user"
+  password: "superSecretPassword"
+
+mediawiki_name: "Le wiki de l'UTT"
+
+php_versions:
+  - "7.4"
+
+php_modules:
+  - imagemagick
+
+base_packages:
+  - nano
+  - netcat
+  - zip
+  - unzip
+  - python3
+  - git
+  - vim
+  - rsync
+  - wget
+  - curl

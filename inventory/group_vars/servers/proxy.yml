@@ -1,0 +1,4 @@
+proxy_id: "id_CAS_UTT"
+proxy_pass: "mdp_UTT"
+
+proxy_url: "10.23.0.9:3128"

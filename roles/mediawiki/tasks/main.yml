@@ -1,0 +1,25 @@
+---
+# tasks file for mediawiki
+
+- name: Création du dossier Mediawiki
+  file:
+    path: "{{ mediawiki_path }}"
+    owner: www-data
+    state: directory
+
+- name: Installation de Mediawiki
+  unarchive:
+    src: "{{ mediawiki_installation_url }}"
+    dest: "{{ mediawiki_path }}"
+    owner: www-data
+    extra_opts:
+    - "--strip-components=1"
+    #- "--skip-old-files"
+    - "--overwrite"
+
+- name: Configuration de MediaWiki
+  template:
+    src: LocalSettings.php.j2
+    dest: "{{ mediawiki_path }}/LocalSettings.php"
+    owner: www-data
+    backup: yes

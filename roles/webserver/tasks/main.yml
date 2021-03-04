@@ -1,0 +1,43 @@
+---
+# tasks file for webserver
+- name: Ajout du repo Apache
+  apt_repository:
+    repo: "{{ apache_repo }}"
+
+- name: Installation d'Apache
+  apt:
+    name:
+      - apache2
+      - openssl
+    state: latest
+    update_cache: yes
+    
+
+- name: Ajout du repo PHP
+  apt_repository:
+    repo: "{{ php_repo }}"
+
+- name: Installation des paquets PHP de base
+  apt:
+    name: php{{ item }}
+  loop: "{{ php_versions }}"
+  notify:
+    - Restart Apache
+
+- name: Installation des modules PHP
+  notify:
+    - Restart Apache
+  apt:
+    name: php{{ item.0 }}-{{ item.1 }}
+  with_subelements:
+    - "{{ php_versions }}"
+    - "{{ php_modules }}"
+
+- name: Configuration d'Apache
+  template:
+    backup: yes
+    owner: www-data
+    src: sites.conf.j2
+    dest: /etc/apache2/sites-enabled/sites.conf
+  notify:
+    - Restart Apache

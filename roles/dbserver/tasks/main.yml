@@ -1,0 +1,26 @@
+---
+# tasks file for dbserver
+- name: Installation de MariaDB
+  ansible.builtin.apt:
+    name: mariadb
+    state: latest
+    update_cache: yes
+  
+- name: Installation de libraries python pour Ansible
+  ansible.builtin.pip:
+    name: PyMySQL
+
+- name: Création des bases de données
+  community.mysql.mysql_db:
+    name: "{{ item.name }}"
+    encoding: "{{ item.encoding }}"
+    state: present
+  loop: "{{ databases }}"
+
+- name: Gestion des utilisateurs
+  community.mysql.mysql_user:
+    name: "{{ item.username }}"
+    password: "{{ item.password }}"
+    priv: '*.*:ALL'
+    state: present
+  loop: "{{ databases_users }}"

@@ -1,0 +1,3 @@
+---
+ansible_host: "IP_a_changer"
+mediawiki_url: "http://IP_a_changer"

@@ -1,0 +1,24 @@
+[ req ]
+default_bits = 4096
+distinguished_name = req_distinguished_name
+req_extensions = req_ext
+prompt = no
+
+[ req_distinguished_name ]
+countryName = {{ certificat.countryName | default('FR') }}
+stateOrProvinceName = {{ certificat.stateOrProvinceName | default('Grand Est') }}
+localityName = {{ certificat.localityName | default('Troyes') }}
+organizationName = {{ certificat.organizationName | default('Universite de Technologie de Troyes') }}
+organizationalUnitName = {{ certificat.organizationalUnitName | default('TP') }}
+commonName = {{ certificat.commonName | default(certificat.dns[0]) }}
+{% if certificat.emailAddress is defined %}
+emailAddress = {{ certificat.emailAddress }}
+{% endif %}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[alt_names]
+{% for name in certificat.dns %}
+DNS.{{ loop.index }} = {{ name }}
+{% endfor %}

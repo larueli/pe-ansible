@@ -1,0 +1,4 @@
+---
+# defaults file for mediawiki
+mediawiki_url: https://releases.wikimedia.org/mediawiki/1.35/mediawiki-1.35.1.tar.gz
+mediawiki_path: /var/www/html/mediawiki

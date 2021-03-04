@@ -1,0 +1,33 @@
+---
+
+- hosts: all # Pas de panique, cf première tâche
+  environment:
+    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  tasks:
+  - name: "Vérification qu'on exécute pas le playbook sur tous les hôtes"
+    ansible.builtin.fail:
+      msg: "Vous devez utiliser -l ou --limit"
+    when: ansible_limit is not defined
+    run_once: true
+
+  - name: Installation d'OpenSSL
+    ansible.builtin.package:
+      name: "openssl"
+      state: "latest"
+  
+  - name: Creation du dossier SSL
+    ansible.builtin.file:
+      path: "{{ dossier_generation_certificats }}"
+      state: directory
+
+  - name: Génération du certificat
+    ansible.builtin.template:
+      src: ./ssl.conf.j2
+      dest: "{{ dossier_generation_certificats }}ssl.conf"
+      validate: "openssl req -x509 -newkey rsa:4096 -nodes -days {{ certificat.days }} -batch -keyout {{ dossier_generation_certificats }}/{{ certificat.key_file }} -out {{ dossier_generation_certificats }}/{{ certificat.cert_file }} -config %s"
+
+  - name: Suppression de la config
+    ansible.builtin.file:
+      path: "{{ dossier_generation_certificats }}ssl.conf"
+      state: absent

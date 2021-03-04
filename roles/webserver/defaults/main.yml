@@ -1,0 +1,18 @@
+---
+# defaults file for webserver
+php_repo: "ppa:ondrej/php"
+apache_repo: "ppa:ondrej/apache2"
+php_versions:
+  - 7.4
+php_modules:
+  - dom
+  - iconv
+  - json
+  - mbstring
+  - fileinfo
+  - pdo_mysql
+  - imagemagick
+
+virtualhosts: []
+ports_http: []
+ports_https: []
