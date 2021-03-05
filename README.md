@@ -60,7 +60,7 @@ utilisateur:
 
 #### Utilisation des variables
 
-Ansible utilise la syntaxe Jinja2 pour exploiter les variables. Pour faire référence à une variable, on utile `{{  }}`, exemple : `{{ ma_variable }}`. On peut imbriquer des variables entre elles : par exemple : `chemin_clef_secrete: /etc/ssl/{{ dossier_secret }}/clef.private`. **Attention**, si votre variable imbriquée commence par une autre variable, toute la chaine de caractères doit être encadrée par des guillemets. Exemple :
+Ansible utilise la syntaxe Jinja2 pour exploiter les variables. Pour faire référence à une variable, on utilise `{{  }}`, exemple : `{{ ma_variable }}`. On peut imbriquer des variables entre elles : par exemple : `chemin_clef_secrete: /etc/ssl/{{ dossier_secret }}/clef.private`. **Attention**, si votre variable imbriquée commence par une autre variable, toute la chaine de caractères doit être encadrée par des guillemets. Exemple :
 
 ```yaml
 # Exemple avec la définition d'un chemin d'accès au fichier test.txt dont le début est une variable
@@ -117,7 +117,7 @@ Sur votre controller, tapez les commandes suivantes afin de récupérer le TP su
 
 ```bash
 cd
-git clone http://git.utt.fr/laruelli/pe-ansible.git
+git clone https://github.com/larueli/pe-ansible.git
 cd pe-ansible
 ```
 
