@@ -7,12 +7,12 @@
   become: true
   tasks:
     - name: Installation de la base de données
-      ansible.builtin.include_role:
+      include_role:
         name: "dbserver"
     - name: Installation de mediawiki
-      ansible.builtin.include_role:
+      include_role:
         name: "mediawiki"
     - name: Installation du serveur web
-      ansible.builtin.include_role:
+      include_role:
         name: "webserver"
   

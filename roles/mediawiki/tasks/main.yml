@@ -21,3 +21,5 @@
     src: LocalSettings.php.j2
     dest: "{{ mediawiki_path }}/LocalSettings.php"
     backup: yes
+  when:
+    - "{{ mediawiki_is_already_installed }}"

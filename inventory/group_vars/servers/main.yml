@@ -28,8 +28,13 @@ php_versions:
   - "7.4"
 
 php_modules:
-  - imagick
-  - mbstring
+  - php7.4-imagick
+  - php7.4-mbstring
+  - php7.4-xml
+  - php7.4-mysqli
+  - php7.4-mysql
+
+mediawiki_is_already_installed: false
 
 base_packages:
   - nano

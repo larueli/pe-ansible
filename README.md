@@ -460,7 +460,9 @@ Les variables nécessaires au bon déroulement du playbook sont déjà définies
 
 Lancez ensuite le playbook avec `ansible-playbook deploy_mediawiki.yml`.
 
-Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "http://ip_machine" comme URL. Bravo !
+Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "http://ip_machine" comme URL. Si jamais vous n'avez pas de navigateur, utilisez la commande curl : `curl http://IP_machine1/2 | less` si vous voyez défiler du HTML qui parle de Mediawiki, c'est tout bon ! Bravo !
+
+MediaWiki vous proposera ensuite de récupérer un fichier de configuration appelé `LocalSetting.php`. Téléchargez le, comparez le avec le template du role mediawiki, apportez les corrections nécessaires au template, changez la variable `mediawiki_is_already_installed` à `true` pour la machine configurée et faites de même pour l'autre machine.
 
 ## Déployer SSL
 
