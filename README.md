@@ -453,7 +453,10 @@ Dans un playbook, on peut dire à un certain groupe de machines d'exécuter un r
 
 C'est exactement ce qui est fait dans le plyabook `deploy_mediawiki.yml`. Allez le voir, et constatez que les trois rôles sont lancés dans ce playbook.
 
-Les variables nécessaires au bon déroulement du playbook sont déjà définies. Installez bien la collection `community.mysql` qui permet de manipuler les bases de données avec `ansible-galaxy collection install community.mysql`.
+Les variables nécessaires au bon déroulement du playbook sont déjà définies. Installez bien les collections:
+
+* `community.mysql` qui permet de manipuler les bases de données avec `ansible-galaxy collection install community.mysql`
+* `community.general` qui contient notamment des modules pour Apache, notre serveur web ave `ansible-galaxy collection install community.general`
 
 Lancez ensuite le playbook avec `ansible-playbook deploy_mediawiki.yml`.
 

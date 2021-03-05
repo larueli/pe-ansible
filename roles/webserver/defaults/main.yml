@@ -14,7 +14,10 @@ php_modules:
   - imagemagick
 
 virtualhosts: []
-ports_http: []
-ports_https: []
+apache_non_standard_ports: []
 
 apache_base_path: "/var/www/html"
+
+apache_modules:
+  - ssl
+  - rewrite

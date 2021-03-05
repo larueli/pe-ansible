@@ -1,31 +1,33 @@
 ---
 # tasks file for webserver
 - name: Ajout du repo Apache
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ apache_repo }}"
 
 - name: Installation d'Apache
-  apt:
+  ansible.builtin.apt:
     name:
-      - apache2
       - openssl
+      - apache2
     state: latest
     update_cache: yes
     
 - name: Vérification des permissions
-  file:
+  ansible.builtin.file:
     path: "{{ apache_base_path }}"
     state: directory
     owner: www-data
     group: www-data
     recurse: true
+  notify:
+    - Restart Apache
 
 - name: Ajout du repo PHP
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ php_repo }}"
 
 - name: Installation des paquets PHP de base
-  apt:
+  ansible.builtin.apt:
     name: php{{ item }}
   loop: "{{ php_versions }}"
   notify:
@@ -34,17 +36,29 @@
 - name: Installation des modules PHP
   notify:
     - Restart Apache
-  apt:
+  ansible.builtin.apt:
     name: php{{ item.0 }}-{{ item.1 }}
-  with_subelements:
+  with_together:
     - "{{ php_versions }}"
     - "{{ php_modules }}"
 
 - name: Configuration d'Apache
-  template:
-    backup: yes
+  ansible.builtin.template:
     owner: www-data
     src: sites.conf.j2
     dest: /etc/apache2/sites-enabled/sites.conf
   notify:
     - Restart Apache
+
+- name: Suppresion du site par défaut d'Apache
+  ansible.builtin.file:
+    state: absent
+    path: /etc/apache2/sites-enabled/000-default.conf
+  notify:
+    - Restart Apache
+
+- name: Activation des modules Apache
+  community.general.apache2_module:
+    state: present
+    name: "{{ item }}"
+  loop: "{{ apache_modules }}"

@@ -29,6 +29,7 @@ php_versions:
 
 php_modules:
   - imagick
+  - mbstring
 
 base_packages:
   - nano

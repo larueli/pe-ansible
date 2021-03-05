@@ -2,12 +2,12 @@
 # tasks file for mediawiki
 
 - name: Création du dossier Mediawiki
-  file:
+  ansible.builtin.file:
     path: "{{ mediawiki_path }}"
     state: directory
 
 - name: Installation de Mediawiki
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ mediawiki_installation_url }}"
     dest: "{{ mediawiki_path }}"
     remote_src: true
@@ -17,7 +17,7 @@
     - "--overwrite"
 
 - name: Configuration de MediaWiki
-  template:
+  ansible.builtin.template:
     src: LocalSettings.php.j2
     dest: "{{ mediawiki_path }}/LocalSettings.php"
     backup: yes
