@@ -10,12 +10,12 @@ databases_users:
     password: "superSecretPassword"
 
 ports_http:
-  - "8080"
-  - "8443"
+  - "80"
+  - "443"
 
 virtualhosts:
   - documentroot: "/var/www/html/mediawiki"
-    port: "8080"
+    port: "80"
 
 mediawiki_db:
   name: "mediawiki-db"

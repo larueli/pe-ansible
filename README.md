@@ -126,7 +126,25 @@ Explications :
 * La commande `cd` permet de `change directory` (changer de répertoire). Utilisée sans paramètres, elle vous déplace dans votre répertoire utilisateur.
 * `git clone` permet de récupérer le contenu d'un repo git. Git est un système de gestion de code source qui permet de versionner et de travailler à plusieurs facilement.
 
-Testez la connexion sur vos autres machines depuis le controller en faisant `ssh ubuntu@IP` avec l'IP de chaque hôte. Confirmez éventuellement les clefs. Une fois la connexion établie, tapez `exit` pour revenir sur votre controller.
+Afin de clarifier le terminal, tapez `hostnamectl set-hostname machine3`, puis deux fois `exit` afin de vous déconnecter totalement et reconnectez vous puis remettez vous en root (`sudo -i`). Cela vous aidera à savoir rapidement sur quelle machine vous êtes. Replacez-vous bien dans le dossier du projet `pe-ansible` : `cd /root/pe-ansible`.
+
+#### Préparation de chaque hote
+
+Sur les deux premiers hotes, connectez-vous, saisissez `sudo -i` afin de devenir root, puis indiquez vos identifiants pour connecter à internet :
+
+```bash
+export http_proxy='http://identifiant:passe@10.23.0.9:3128'
+export https_proxy='http://identifiant:passe@10.23.0.9:3128'
+```
+
+Il faut ensuite installer le serveur SSH qui va nous permettre de prendre le controle à distance de la machine : `apt-get update && apt-get install -y openssh-server`.
+
+Afin de clarifier le terminal, tapez `hostnamectl set-hostname machine1/2` (changez selon le numéro de votre hote), puis `exit` et reconnectez vous. Cela vous aidera à savoir rapidement sur quelle machine vous êtes.
+
+#### Vérification
+
+
+Revenez sur votre controlleur (3éme machine) et testez la connexion sur vos autres machines en faisant `ssh administrateur@IP` avec l'IP de chaque hôte. Confirmez éventuellement les clefs (`yes`). Une fois la connexion établie, vous pouvez constater que votre invite a changé de `root@machine3` à `administrateur@machine1/2`, preuve que vous êtes bien sur une machine différente. Tapez `exit` pour revenir sur votre controller.
 
 ### Manipulation de l'inventaire
 
@@ -158,7 +176,7 @@ On définit des variables dans l'inventaire. Certaines sont propres à vos besoi
 
 Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2, puis tapez `ip a sh | grep inet`. Le caractère `|` est composé en appuyant sur Alt Gr + 6. Deux adresse s'affichent normalement, une en 127.0.0.1 qui ne nous intéresse pas, car elle est locale, et une autre en `10.100.X.Y`. Notez bien cette dernière IP.
 
-Si vous allez dans inventory/host_vars/machine1/main.yml, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et dans la variable `mediawiki_url` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
+Si vous allez dans `inventory/host_vars/machine1/main.yml`, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et dans la variable `mediawiki_url` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
 
 Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les moudles Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes.
 
@@ -225,27 +243,28 @@ ansible.builtin.apt:
 Sachant que les variables peuvent être assez complexes, on peut faire des scénarios très intéressants avec des paquets différents par machine mais pourtant avec la même tâche, juste en changeant le niveau de déclaration de la variable `paquets_basiques`.
 
 * Les playbooks, qui sont des ensembles de tâches (*book*) qui doivent être jouées (*play*) sur un ou plusieurs hotes.
-* Les rôles qui sont un ensemble de tâches pouvant être lancées depuis un playbook. Plutôt que d'écrire toutes nos tâches directement dans un playbook, on les met dans des rôles. Ces rôles sont ensuite appelés par les playbooks via le module `include_role`. Cela permet de distribuer entre plusieurs infrastructure (ou même sur internet) un ensemble de tâche. On peut retrouver sur le net des rôles permettant de déployer facilement des serveurs de base de données, des serveurs web, ... Vous pouvez en retrouver dans le dossier `roles`.
-
-Chaque dossier contient un rôle. Combien y a-t-il de rôles dans notre projet ? Chacun des rôles dispose de l'arboresence suivante : tasks/main.yml pour les tâches, defaults/main.yml pour les variables par défaut (si notre roles utilise des variables, celles-ci doivent avoir une valeur par défaut au cas où l'utilisateur du rôle n'aie pas redéfini les variables pour son usage). On verra après ce que signifient les autres fichiers. 
+* Les rôles qui sont un ensemble de tâches pouvant être lancées depuis un playbook. Plutôt que d'écrire toutes nos tâches directement dans un playbook, on les met dans des rôles. Ces rôles sont ensuite appelés par les playbooks via le module `include_role`. Cela permet de distribuer entre plusieurs infrastructures (ou même sur internet) un ensemble de tâches. On peut retrouver sur le net des rôles permettant de déployer facilement des serveurs de base de données, des serveurs web, des dns, ... Vous pouvez en retrouver dans le dossier `roles`. 
 
 * Les collections. C'est un ensemble de rôles, de playbooks et de modules facilement distribuables et installables. C'est une nouveauté récente d'Ansible afin de clairifier et standardiser les échanges de rôles/playbooks/... La collection la plus importante et installée par défaut est `ansible.builtin`. Pour les besoins de ce TP, il faut installer la collection `community.mysql` afin d'utiliser les modules de base de données. L'outil `ansible-galaxy` est celui qui permet de télécharger, d'installer et créer des rôles ou des collections. Tapez `ansible-galaxy collection install community.mysql` sur votre controller afin d'installer la collection nécessaire pour les bases de données.
 
 ### Votre premier playbook
 
-Ouvrez le fichier `init.yml` et décrivez son contenu. Quels sont les machines sur lequelles ce playbook va s'exécuter ? Quel est l'objectif de ce playbook ?
+Ouvrez le fichier `init.yml`.
+
+#### Exercice 4
+
+1. Décrivez son contenu. Quel est l'objectif de ce playbook ?
+2. Quels sont les machines sur lequelles ce playbook va s'exécuter ?
 
 Lancez le playbook en tapant `ansible-playbook init.yml --ask-pass --ask-become-pass`. Explications :
 
 * `ansible-playbook` est l'outil permettant de lancer des playbooks
 * `init.yml` est le playbook
 * `--ask-pass` permet de demander le mot de passe de connexion SSH
-* `--ask-become-pass` permet de demander le mot de passe pour utiliser la commande sudo  et exécuter des commandes en administrateur (toutes les tâches indiquées par `become: true`). Nous nous connectons avec l'utilisateur `ubuntu`, il nous faut donc demander le mot de passe pour passer en `root`. Il suffit de taper entrée pour reprendre la même valeur que le mot de passe de connexion classique.
+* `--ask-become-pass` permet de demander le mot de passe pour utiliser la commande sudo  et exécuter des commandes en administrateur (toutes les tâches indiquées par `become: true`). Nous nous connectons avec l'utilisateur `administrateur`, il nous faut donc demander le mot de passe pour passer en `root`. Il suffit de taper entrée pour reprendre la même valeur que le mot de passe de connexion classique.
 
-#### Exercice 4
-
-1. Décrire ce qui s'affiche à l'écran.
-2. Relancer une deuxième fois le playbook. Quelle différence ?
+3. Décrire ce qui s'affiche à l'écran.
+4. Relancer une deuxième fois le playbook. Quelle différence ?
 
 On constate également que la première tâche est `gather facts`. Cette tâche permet à Ansible de scanner la machine afin de créer des variables qui nous indiquent la version du système d'exploitation, la liste des cartes réseau, ... On s'en sert notamment afin de faire des tâches conditionnelles comme ici.
 
@@ -261,9 +280,11 @@ On constate également que la première tâche est `gather facts`. Cette tâche 
 
 La documentation officielle des facts est [ici](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html).
 
-On va agrémenter ce playbook afin d'y ajouter des fonctionnalités. Nous allons maintenant faire en sorte de ne plus avoir à saisir de mot de passe pour la connexion SSH. Cela est réalisable grâce au chiffrement asymétrique ! Le principe est qu'il y a deux clefs, ce qui est chiffré avec une ne peut être que déchiffré par l'autre. On garde une des clefs (clef privée), et on donne l'autre au public. Avec notre clef publique, les autres peuvent chiffrer un message et vu que nous seuls avons l'autre clef pour déchiffrer, c'est confidentiel. Dans l'autre sens, si on chiffre quelque chose avec notre clef privée, techniquement tout le monde pourra le déchiffrer grâce à notre clef. Or, vu que l'on est le seul à posséder la clef qui a permis de chiffrer ce message, notre message est authentifié. (chaque couple de clef est unique, donc si quelqu'un nous donne sa clef publique et qu'on reçoit un message que seule sa clef publique peut déchiffer, alors forcémenet c'est associé à sa clef privée). Le chiffrement assymétrique est très pratique dans des environnements non sécurisés, car la seule chose à transmettre de manière non sécurisée est la clef publique (or elle est publique donc ce n'est pas grave si quelqu'un écoute nos conversations et tombe dessus). Le tout est que la clef privée reste absolument privée, si quelqu'un nous la vole, tout le principe s'effondre.
+On va agrémenter ce playbook afin d'y ajouter des fonctionnalités. Nous allons maintenant faire en sorte de ne plus avoir à saisir de mot de passe pour la connexion SSH. Cela est réalisable grâce au chiffrement asymétrique ! Le principe est qu'il y a deux clefs, ce qui est chiffré avec une ne peut être que déchiffré que par l'autre. On garde une des clefs (clef privée), et on donne l'autre au public. Avec notre clef publique, les autres peuvent chiffrer un message et vu que nous seuls avons l'autre clef pour déchiffrer, c'est confidentiel. Dans l'autre sens, si on chiffre quelque chose avec notre clef privée, techniquement tout le monde pourra le déchiffrer grâce à notre clef. Or, vu que l'on est le seul à posséder la clef qui a permis de chiffrer ce message, notre message est authentifié, seul nous avons pu l'écrire. Chaque couple de clef est unique, donc si quelqu'un nous donne sa clef publique et qu'on reçoit un message que seule sa clef publique peut déchiffer, alors forcément c'est que sa clef privée, qu'il est le seul à avoir, a chiffré le message. Le chiffrement asymétrique est très pratique dans des environnements non sécurisés, car la seule chose à transmettre est la clef publique. Le tout est que la clef privée reste absolument privée, car si quelqu'un nous la vole, tout le principe s'effondre. Ce chiffrement est rendu possible grâce à des propriétés arithmétiques complexes trouvées par Whitfield Diffie, Martin Hellman et Ralph Merkle mais dont l'implémentation la plus populaire est celle de Ronald Rivest, Adi Shamir et Leonard Adleman (algorithme RSA). [Un exemple simple et non-optimisé de chiffrement RSA a été réalisé dans le cours de NF05](https://github.com/larueli/RSANF05UTT).
 
-SSH exploite cet outil, et nous allons l'utiliser pour ne plus avoir à saisir de mot de passe. Cela se fait en deux étapes : générer un couple de clef sur notre pc, puis mettre la clef publique sur chacun des serveurs (dans un dossier particulier connu par le service de connexion SSH). Pour la partie génération des clefs, c'est assez simple. Sur votre controller, vous pouvez générer votre clef en tapant `ssh-keygen`, on vous demande où stocker la clef. Notez bien le chemin où la clef sera enregistrée, puis appuyez sur suivant pour choisir un mot de passe associée à la clef privée et qui permettra de déverouiller son utilisation (cela consiste une protection au cas où la clef tomberait entre de mauvaises mains). La deuxième partie consiste à copier la clef sur chacun des serveurs à un à un en utilisant certains utilitaires (scp ou autres). C'est long et pénible, et il faut garder une trace de "a-t-on déployé la clef sur ce serveur ?". Autant qu'Ansible le fasse pour nous !
+SSH exploite ce chiffrement (tout comme HTTPS, avec [la notion de confiance en plus](https://fr.wikipedia.org/wiki/Certificat_%C3%A9lectronique)), et nous allons l'utiliser pour ne plus avoir à saisir de mot de passe. Cela se fait en deux étapes : générer un couple de clef sur notre pc, puis mettre la clef publique sur chacun des serveurs (dans un dossier particulier connu par le service de connexion SSH). Pour la partie génération des clefs, c'est assez simple. Sur votre controller, vous pouvez générer votre clef en tapant `ssh-keygen`, on vous demande où stocker la clef. Laissez la valeur par défaut mais notez bien le chemin où la clef sera enregistrée, puis appuyez sur entrée pour choisir un mot de passe associée à la clef privée et qui permettra de déverouiller son utilisation (cela consiste une protection au cas où la clef tomberait entre de mauvaises mains). Vous êtes libres de ne pas en choisir (mot de passe vide) car cette clef ne sera utilisée que dans le cadre de ce TP. La deuxième partie consiste à copier la clef sur chacun des serveurs un à un en utilisant certains utilitaires (scp ou autres). C'est long et pénible, et il faut garder une trace de "a-t-on déployé la clef sur ce serveur ?".
+
+Autant qu'Ansible le fasse pour nous !
 
 #### Exercice 5
 
@@ -275,8 +296,10 @@ En lisant [la documentation du module authorized_key d'Ansible](https://docs.ans
 Appliquez ensuite le playbook avec la commande vue plus haut. Pour vérifier, testez maintenant sur votre controller :
 
 * Tapez `eval $(ssh-agent)` pour lancer le système qui fournit les clefs privées lors des connexions SSH
-* Il faut ajouter notre clef : `ssh-add ~/.ssh/id_rsa`, vérifier avec `ssh-add -L` qu'une ligne apparait bien pour signaler qu'une clef a été ajoutée.
-* On peut maintenant retenter de se connecter : `ssh root@machine1` et constater qu'on ne nous demande plus de mot de passe de connexion ! Désormais, nous pourrons lancer tous nos playbook sans indiquer `--ask-pass --ask-become-pass`.
+* Il faut ajouter notre clef : `ssh-add /root/.ssh/id_rsa`, vérifier avec `ssh-add -L` qu'une ligne apparait bien pour signaler qu'une clef a été ajoutée.
+* On peut maintenant retenter de se connecter : `ssh root@IP_machine_1/2` et constater qu'on ne nous demande plus de mot de passe de connexion, et quon directement connecté en root sur notre machine ! Désormais, nous pourrons lancer tous nos playbook sans indiquer `--ask-pass --ask-become-pass`.
+
+Dans le fichier `inventory/group_vars/servers/main.yml`, changez `ansible_user: administrateur` par `ansible_user: root`, et relancez le playbook `init.yml` mais sans options : `ansible-playbook init.yml`.
 
 ### Manipulation des rôles
 
@@ -404,7 +427,7 @@ Le dossier meta comprend des données sur le rôle en lui même, très pratique 
 
 Ces fichiers servent à faire du CI/CD sur le rôle afin de vérifier sa qualité et son fonctionnement. Cela est notamment fortement recommandé pour des rôles très utilisés et comprenant plusieurs développeurs en simultané.
 
-La commande `ansible-galaxy init nom-du-role` va créer les dossiers nécessaires pour `nom-du-role`.
+La commande `ansible-galaxy init nom-du-role` permet de créer les dossiers nécessaires pour `nom-du-role`.
 
 En réalité, dans l'arboresence vue plus haut, le dossier `tasks` suffit pour faire un rôle valide.
 
@@ -415,7 +438,6 @@ La [documentation officielle des rôles](https://docs.ansible.com/ansible/latest
 1. Combien y a-t-il de tâches dans le rôle mediawiki ?
 2. Dans le rôle mediawiki, quelle est la valeur par défaut de `mediawiki_path` ?
 3. En lisant le template dans webserver, donnez un exemple de virtualhost suffisant pour le template.
-4. En lisant le template dans webserver, si je veux ajouter un certificat SSL, dois-je simplement définir les variables `ssl.cert_path` et `ssl.key_path` ? Que dois-je faire ?
 
 ### utiliser un rôle dans un playbook
 
@@ -431,9 +453,11 @@ Dans un playbook, on peut dire à un certain groupe de machines d'exécuter un r
 
 C'est exactement ce qui est fait dans le plyabook `deploy_mediawiki.yml`. Allez le voir, et constatez que les trois rôles sont lancés dans ce playbook.
 
-Les variables nécessaires au bon déroulement du playbook sont déjà définies.
+Les variables nécessaires au bon déroulement du playbook sont déjà définies. Installez bien la collection `community.mysql` qui permet de manipuler les bases de données avec `ansible-galaxy collection install community.mysql`.
 
-Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "ip_machine:8080" comme URL. Bravo !
+Lancez ensuite le playbook avec `ansible-playbook deploy_mediawiki.yml`.
+
+Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "http://ip_machine" comme URL. Bravo !
 
 ## Déployer SSL
 
@@ -458,8 +482,9 @@ La génération se fait via le playbook `ssl.yml`.
 
 Indications :
 
-1. SSL fonctionne avec les noms DNS des machines. Nous n'avons pas de DNS, donc comme seule et unique entrée vous devez donner l'IP de machine1.
+1. SSL fonctionne avec les noms DNS des machines mais aussi avec leur IP. Pour simplifier, vous devez donner l'IP de machine1.
 2. Le chemin pour le dossier des certificats ne doit pas avoir de `/` à la fin.
+3. Le port standard pour du https est le 443.
 
 Lancez le playbook ainsi `ansible-playbook ssl.yml --limit machine1`. Quand on ne sait pas à l'avance sur quel groupe ou quel machine on va faire tourner un playbook, on dit qu'il tourne sur tous les hotes (`hosts: all`), et on utilise l'argument `--limit nom_machine` afin de ne faire tourner le playbook que sur une seule machine. On peut éventuellement doubler avec vérification dans le playbook qu'une limitation est bien faite et qu'on est pas en train d'exécuter le playbook sur toutes les machines.
 

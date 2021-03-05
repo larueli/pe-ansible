@@ -1,6 +1,7 @@
 ---
 
 - hosts: all # Pas de panique, cf première tâche
+  gather_facts: true
   environment:
     http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
     https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"

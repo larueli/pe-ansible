@@ -1,11 +1,7 @@
 ---
 - hosts: all
-  environment:
-    http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
-    https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
+  become: true
   gather_facts: true
-
-- hosts: all
   environment:
     http_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
     https_proxy: "http://{{ proxy_id }}:{{ proxy_pass }}@{{ proxy_url }}"
@@ -15,4 +11,3 @@
         name: "{{ base_packages }}"
         state: latest
         update_cache: true
-      become: true
