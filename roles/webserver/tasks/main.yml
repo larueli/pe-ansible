@@ -12,6 +12,13 @@
     state: latest
     update_cache: yes
     
+- name: Vérification des permissions
+  file:
+    path: "{{ apache_base_path }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: true
 
 - name: Ajout du repo PHP
   apt_repository:

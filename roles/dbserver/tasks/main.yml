@@ -2,25 +2,29 @@
 # tasks file for dbserver
 - name: Installation de MariaDB
   ansible.builtin.apt:
-    name: mariadb
+    name: mariadb-server
     state: latest
     update_cache: yes
   
-- name: Installation de libraries python pour Ansible
-  ansible.builtin.pip:
-    name: PyMySQL
+- name: Installation de librairies python pour Ansible
+  ansible.builtin.apt:
+    name: python3-pymysql
 
 - name: Création des bases de données
   community.mysql.mysql_db:
     name: "{{ item.name }}"
     encoding: "{{ item.encoding }}"
+    check_implicit_admin: true
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
     state: present
   loop: "{{ databases }}"
 
 - name: Gestion des utilisateurs
   community.mysql.mysql_user:
-    name: "{{ item.username }}"
+    name: "{{ item.name }}"
     password: "{{ item.password }}"
+    check_implicit_admin: true
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
     priv: '*.*:ALL'
     state: present
   loop: "{{ databases_users }}"

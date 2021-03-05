@@ -178,7 +178,7 @@ Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2,
 
 Si vous allez dans `inventory/host_vars/machine1/main.yml`, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et dans la variable `mediawiki_url` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
 
-Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les moudles Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes.
+Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les moudles Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes. Tapez `clear` pour effacer l'écran.
 
 #### L'ordre des variables
 

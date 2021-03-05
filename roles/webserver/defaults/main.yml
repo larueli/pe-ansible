@@ -16,3 +16,5 @@ php_modules:
 virtualhosts: []
 ports_http: []
 ports_https: []
+
+apache_base_path: "/var/www/html"
