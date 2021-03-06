@@ -438,6 +438,8 @@ La [documentation officielle des rôles](https://docs.ansible.com/ansible/latest
 1. Combien y a-t-il de tâches dans le rôle mediawiki ?
 2. Dans le rôle mediawiki, quelle est la valeur par défaut de `mediawiki_path` ?
 3. En lisant le template dans webserver, donnez un exemple de virtualhost suffisant pour le template.
+4. Le fichier de configuration de mediawiki ne doit pas être installé sur le serveur avant son premier lancement depuis un naviagteur. Comment cela se traduit-il dans la tâche de configuration de mediawiki ?
+5. Certaines tâches comprennent `loop` et font référence à une variable `item`. Pourquoi ? A quoi ça sert ? N'hésitez pas à vous aider d'internet.
 
 ### utiliser un rôle dans un playbook
 
@@ -503,7 +505,9 @@ Maintenant que notre certificat est généré sur machine1, il faut adapter la c
 2. Si je veux laisser la configuration générale du groupe et faire une configuration spécifique pour une machine, que dois-je faire (quelle variable mettre à quel endroit) ?
 3. Appliquez la question 2 et modifiez la configuration pour y rajouter votre certificat SSL. N'oubliez pas de modifier l'URL de votre mediawiki dans vos variables.
 
-Relancez le playbook web, reconnectez-vous sur l'URL de machine1 en mettant https et vous devriez accéder à MediaWiki !
+Relancez le playbook web.
+
+Vous pouvez désormais ressayer la commande `curl`, mais avec du https : `curl https://IP_machine_1 | less`. curl devrait se plaindre qu'on ne peut pas faire confiance au certificat. Dans ce cas, recommencer mais avec l'option `--insecure` : `curl --insecure https://IP_machine_1 | less`
 
 ## Pour aller plus loin
 

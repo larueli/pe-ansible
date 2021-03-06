@@ -22,4 +22,4 @@
     dest: "{{ mediawiki_path }}/LocalSettings.php"
     backup: yes
   when:
-    - "{{ mediawiki_is_already_installed }}"
+    - mediawiki_is_already_installed

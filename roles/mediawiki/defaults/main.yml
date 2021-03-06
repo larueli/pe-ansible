@@ -3,3 +3,4 @@
 mediawiki_installation_url: https://releases.wikimedia.org/mediawiki/1.35/mediawiki-1.35.1.tar.gz
 mediawiki_path: /var/www/html/mediawiki
 mediawiki_debug: "true"
+mediawiki_is_already_installed: false
