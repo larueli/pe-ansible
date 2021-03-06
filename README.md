@@ -88,6 +88,14 @@ Il faut se connecter sur eve-ng avec les identifiants fournis par l'enseignant. 
 
 Le pavé numérique est parfois instable sur l'interface via le navigateur, privilégiez `Maj + chiffre en haut du clavier` pour saisir des chiffres.
 
+Pour lire un fichier, utilisez la commande `less` : `less chemin/vers/le/fichier`. Vous pouvez utiliser les flêches du clavier pour vous déplacer. Apuuyez sur q pour quitter.
+
+Pour modifier un fichier, utilisez `nano` : `nano chemin/vers/le/fichier`. Vous pouvez déplacer le curseur avec les flèches du clavier. Les commandes sont affichées en bas, les principales sont `Ctrl + O` puis Entrée pour sauvegarder, `Ctrl + X` pour quitter. Pour quitter sans sauvegarder, `Ctrl + X` puis appuyez sur `n` pour refuser d'enregistrer.
+
+Quand vous tapez un chemin d'accès à un fichier dans la ligne de commande (pour less ou nano par exemple), utilisez les tabulations (touche `tab` à gauche) afin de compléter automatiquement les chemins d'accès selon les premières lettres que vous avez déjà tapé.
+
+Pour récupérer une commande déjà tapée, utilisez les fléches du clavier (Haut et Bas) pour naviguer dans l'historique des commandes.
+
 ### Préparation du controller
 
 Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i`.
@@ -150,7 +158,7 @@ Revenez sur votre controlleur (3éme machine) et testez la connexion sur vos aut
 
 ### Manipulation de l'inventaire
 
-Ansible base son travail sur l'inventaire. Eh oui, exécuter des tâches c'est une chose, savoir sur quelles machines les exécuter en est une autre ! C'est précisément le rôle de l'inventaire.
+Ansible base son travail sur l'inventaire. Eh oui, exécuter des tâches c'est une chose, savoir sur quelles machines les exécuter et avec quels paramètres en est une autre ! C'est précisément le rôle de l'inventaire.
 
 L'inventaire permet de :
 
