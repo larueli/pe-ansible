@@ -10,6 +10,7 @@
   ansible.builtin.unarchive:
     src: "{{ mediawiki_installation_url }}"
     dest: "{{ mediawiki_path }}"
+    creates: "{{ mediawiki_path }}/index.php"
     remote_src: true
     extra_opts:
     - "--strip-components=1"
