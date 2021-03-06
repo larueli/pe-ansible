@@ -86,6 +86,8 @@ Nous allons utiliser trois machines virtuelles, deux seront des serveurs nous pe
 
 Il faut se connecter sur eve-ng avec les identifiants fournis par l'enseignant. Vous aurez normalement trois machines, les deux premières seront celles controllées, et la troisième sera notre controller avec Ansible dessus.
 
+Le pavé numérique est parfois instable sur l'interface via le navigateur, privilégiez `Maj + chiffre en haut du clavier` pour saisir des chiffres.
+
 ### Préparation du controller
 
 Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i`.
@@ -515,3 +517,55 @@ Vous pouvez désormais ressayer la commande `curl`, mais avec du https : `curl h
 2. Quelles utilisations possibles entre Ansible et un fournisseur cloud (Proxmox, AWS, GCP, ...) ?
 3. Qu'est-ce qu'Ansible-Lint ? Quel intêrét ?
 3. Quel est l'intérêt d'AWX / Ansible Tower ?
+
+## Troubleshoot
+
+### Ansible ne trouve pas mes fichiers YML
+
+* Etes-vous bien sur machine3 ?
+* Etes-vous connecté en root ? L'invite de commande devrait afficher `root@machine3`, si c'est `administrateur@machine3`, tapez `sudo -i`
+* Etes-vous bien dans le dossier `/root/pe-ansible` ? Vérifiez avec `pwd`, si ce n'est pas le cas : `cd /root/pe-ansible`
+
+### Erreur de proxy
+
+#### Dans un playbook
+
+Vérifiez deux fois que le fichier `inventory/group_vars/servers/proxy.yml` contienne bien vos informations de connexion UTT. Veillez à bien encadrer votre mot de passe par des guillemets, surtout s'il posséde des caractères spéciaux. Le pavé numérique est parfois instable sur l'interface via le navigateur, privilégiez `Maj + chiffre en haut du clavier` pour saisir des chiffres.
+
+#### Sur un hote (en faisant apt-get, ...)
+
+Faites `echo $http_proxy`, puis `echo $https_proxy`. Si rien ne s'affiche vous devez saisir vos identifiants ainsi :
+
+```bash
+export http_proxy='http://identifiant:passe@10.23.0.9:3128'
+export https_proxy='http://identifiant:passe@10.23.0.9:3128'
+```
+
+Veillez à bien encadrer les variables avec des guillemets **simples** comme dans l'exemple, car les guillemets double entrainent l'interprétation de la chaine de caractères par bash, ce que nous ne souhaitons pas. Le pavé numérique est parfois instable sur l'interface via le navigateur, privilégiez `Maj + chiffre en haut du clavier` pour saisir des chiffres.
+
+Faites `clear` pour effacer la console et masquer vos identifiants.
+
+### Ansible ne trouve pas les modules
+
+Avez vous bien installés les trois collections supplémentaires ?
+
+* `ansible-galaxy collection install ansible.posix`
+* `ansible-galaxy collection install community.mysql`
+* `ansible-galaxy collection install community.general`
+
+### Ansible ne se lance pas
+
+* Etes-vous bien sur la machine 3 ?
+* Votre proxy fonctionne-t-il ?
+* Installez bien le paquet ansible : `apt-get update && apt-get install -y ansible`
+
+### Ansible ne se connecte pas en SSH
+
+Le pavé numérique est parfois instable sur l'interface via le navigateur, privilégiez `Maj + chiffre en haut du clavier` pour saisir des chiffres.
+
+* Etes-vous bien sur la machine 3 ?
+* Avez vous installé sshpass ? `apt-get update && apt-get install -y sshpass`
+* Avec quel utilisateur vous-vous vous connecter ? La méthode avec mot de passe est sur l'utilisateur administrateur, la méthode sans mot de passe via clef SSH est sur l'utilisateur `root`. Vérifiez donc que la variable `ansible_user` dans `inventory/group_vars/servers/main.yml` corresponde.
+* Tentez manuellement de vous connecter en SSH : sur machine3, tapez `ssh administrateur@IP_MACHINE`, et regardez. Avez-vous bien accepté les clefs ? Vous devez à minima vous connecter au moins une fois à la main sur chaque hote en SSH depuis machine3 afin d'accepter les clefs.
+* Sur chacun des hotes machine1/2, avez vous bien installé le paquet `openssh-server` : `apt-get update && apt-get install -y openssh-server`. Configurez votre proxy sur l'hote pour que la commande apt-get fonctionne.
+* Pour la connexion en root sans mot de passe depuis machine3, avez-vous bien votre clef publique dans votre agent SSH ? `ssh-add -L`, si rien ne s'affiche, ce n'est pas bon. Recommencez la procédure avec `eval $(ssh-agent)` puis `ssh-add /root/.ssh/id_rsa`.
