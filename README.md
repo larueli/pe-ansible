@@ -2,7 +2,7 @@
 
 Ce TP sur Ansible est destiné à des étudiants s'intéressant aux notions suivantes : cloud, automatisation, serveurs, provisionning, déploiement.
 
-Il a été conçu et rédigé par [Ivann LARUELLE](https://ivannlaruelle.fr), étudiant en RT à l'UTT en P21, administrateur du [Système d'Information des Associations de l'UNG](https://ung.utt.fr/tech/sia) et encadré par l'enseignante [Samiha AYED](https://recherche.utt.fr/research-directory/samiha-ayed). 
+Il a été conçu et rédigé par [Ivann LARUELLE](https://ivannlaruelle.fr), étudiant en RT à l'UTT en P21, administrateur du [Système d'Information des Associations de l'UNG](https://ung.utt.fr/tech/sia) et encadré par l'enseignante [Samiha AYED](https://recherche.utt.fr/research-directory/samiha-ayed).
 
 ## Introduction
 
@@ -16,7 +16,7 @@ Dans ce TP, nous allons voir comment certaines fonctionnalités majeures d'Ansib
 
 ### Oui, Ansible !
 
-Ansible est un outil open source édité par Red Hat, une multinationale célèbre pour son système d'exploitation orientée serveurs (CentOS), sa distribution Kubernetes (OpenShift), et bien d'autres outils (quay.io, ...).
+Ansible est un outil open source édité par Red Hat, une multinationale célèbre pour son système d'exploitation orienté serveurs (CentOS), sa distribution Kubernetes (OpenShift), et bien d'autres outils (quay.io, ...).
 
 Dans l'idée, Ansible permet d'effectuer des tâches sur des machines à distance, ces tâches ayant la particularité d'être idempotentes.
 
@@ -35,7 +35,7 @@ Tout ce qui est situé à droite d'un `#` est considéré comme un commentaire.
 #### Les principaux types de données en YAML
 
 * Les données simples :
-  * Les chaines de caractères : `ma_variable: "ma_valeur"`. Techniquement, sauf cas particulier, on est pas obligé d'utiliser les guillemets, mais en réalité cela permet de gagner du temps car la syntaxe avec les guillemets est toujours valide (notamment si on fait référence à une autre variable). 
+  * Les chaines de caractères : `ma_variable: "ma_valeur"`. Techniquement, sauf cas particulier, on est pas obligé d'utiliser les guillemets, mais en réalité cela permet de gagner du temps car la syntaxe avec les guillemets est toujours valide (notamment si on fait référence à une autre variable).
   * Les nombres : `ma_variable: 5`. Une valeur en octet doit être précédée de `0`, en hexadécimal précédée par `0x`.
   * Les booléens : `ma_variable: true|false|yes|no`.
 * Les listes/tableaux :
@@ -98,7 +98,7 @@ Pour récupérer une commande déjà tapée, utilisez les fléches du clavier (H
 
 ### Préparation du controller
 
-Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i`.
+Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i` : sudo permet d'exécuter des commandes en tant qu'administrateur de la machine (utilisateur `root`), `sudo -i` permet d'ouvrir une session root et de la maintenir.
 
 Il faut ensuite vous authentifier pour accéder à internet. Tapez les deux lignes suivantes en remplaçant par vos identifiants UTT :
 
@@ -117,7 +117,6 @@ apt-get install -y python3 git nano ansible sshpass
 Explications :
 
 * apt est un gestionnaire de paquets pour Linux, qui sert notamment à installer facilement des logiciels
-* sudo permet d'exécuter des commandes en tant qu'administrateur de la machine (utilisateur `root`)
 * `apt-get update` permet de mettre à jour la liste des paquets disponibles
 * `apt-get install` permet d'installer des paquets, et l'option `-y` permet d'installer sans demander de confirmation.
   * Les paquets `python3` et `sshpass` permettent de faire fonctionner le paquet `ansible`.
@@ -153,7 +152,6 @@ Afin de clarifier le terminal, tapez `hostnamectl set-hostname machine1/2` (chan
 
 #### Vérification
 
-
 Revenez sur votre controlleur (3éme machine) et testez la connexion sur vos autres machines en faisant `ssh administrateur@IP` avec l'IP de chaque hôte. Confirmez éventuellement les clefs (`yes`). Une fois la connexion établie, vous pouvez constater que votre invite a changé de `root@machine3` à `administrateur@machine1/2`, preuve que vous êtes bien sur une machine différente. Tapez `exit` pour revenir sur votre controller.
 
 ### Manipulation de l'inventaire
@@ -182,7 +180,7 @@ Toutes les machines font également partie du groupe spécial `all` qui n'a pas 
 
 ### Les variables
 
-On définit des variables dans l'inventaire. Certaines sont propres à vos besoins, certaines sont propre à Ansible. Un exemple, la variable `ansible_host` permet de définir l'IP réelle d'une machine. 
+On définit des variables dans l'inventaire. Certaines sont propres à vos besoins, certaines sont propres à Ansible. Un exemple, la variable `ansible_host` permet de définir l'IP réelle d'une machine.
 
 Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2, puis tapez `ip a sh | grep inet`. Le caractère `|` est composé en appuyant sur Alt Gr + 6. Deux adresse s'affichent normalement, une en 127.0.0.1 qui ne nous intéresse pas, car elle est locale, et une autre en `10.100.X.Y`. Notez bien cette dernière IP.
 
@@ -253,8 +251,7 @@ ansible.builtin.apt:
 Sachant que les variables peuvent être assez complexes, on peut faire des scénarios très intéressants avec des paquets différents par machine mais pourtant avec la même tâche, juste en changeant le niveau de déclaration de la variable `paquets_basiques`.
 
 * Les playbooks, qui sont des ensembles de tâches (*book*) qui doivent être jouées (*play*) sur un ou plusieurs hotes.
-* Les rôles qui sont un ensemble de tâches pouvant être lancées depuis un playbook. Plutôt que d'écrire toutes nos tâches directement dans un playbook, on les met dans des rôles. Ces rôles sont ensuite appelés par les playbooks via le module `include_role`. Cela permet de distribuer entre plusieurs infrastructures (ou même sur internet) un ensemble de tâches. On peut retrouver sur le net des rôles permettant de déployer facilement des serveurs de base de données, des serveurs web, des dns, ... Vous pouvez en retrouver dans le dossier `roles`. 
-
+* Les rôles qui sont un ensemble de tâches pouvant être lancées depuis un playbook. Plutôt que d'écrire toutes nos tâches directement dans un playbook, on les met dans des rôles. Ces rôles sont ensuite appelés par les playbooks via le module `include_role`. Cela permet de distribuer entre plusieurs infrastructures (ou même sur internet) un ensemble de tâches. On peut retrouver sur le net des rôles permettant de déployer facilement des serveurs de base de données, des serveurs web, des dns, ... Vous pouvez en retrouver dans le dossier `roles`.
 * Les collections. C'est un ensemble de rôles, de playbooks et de modules facilement distribuables et installables. C'est une nouveauté récente d'Ansible afin de clairifier et standardiser les échanges de rôles/playbooks/... La collection la plus importante et installée par défaut est `ansible.builtin`. Pour les besoins de ce TP, il faut installer la collection `community.mysql` afin d'utiliser les modules de base de données. L'outil `ansible-galaxy` est celui qui permet de télécharger, d'installer et créer des rôles ou des collections. Tapez `ansible-galaxy collection install community.mysql` sur votre controller afin d'installer la collection nécessaire pour les bases de données.
 
 ### Votre premier playbook
@@ -317,7 +314,7 @@ On a pu voir ce qu'était un playbook : on y spécifie des hotes, et des tâches
 
 Les rôles viennent répondre à cette problèmatique. Voilà comment un role est structuré :
 
-```
+```raw
 nom-du-role/
   tasks/
     main.yml
@@ -342,6 +339,7 @@ nom-du-role/
 En regardant le chemin d'accès du dossier des rôles dans `ansible.cfg`, puis en regardant dans le dossier en question, indiquer combien il y a de rôles et leurs noms.
 
 Dans ces dossiers, le premier fichier qui est toujours lu est `main.yml`.
+
 #### Tâches
 
 Le dossier tâches contient une suite de tâches. On peut séparer les tâches en plusieurs fichiers pour plus de lisibilité. Pour importer des tâches d'un fichier (exemple fictif `config_zsh.yml`), on rajoute cette tâche dans le fichier `main.yml` :
@@ -396,14 +394,14 @@ Données : {{ valeur.nom }}-{{ valeur.autreClef | upper }}
 
 cela générera :
 
-```
+```raw
 Données : Wow-EE
 Données : Wowo-II
 ```
 
 On peut également insérer du texte si une valeur est définie :
 
-```
+```j2
 {% if maVariable is defined %}
 TEXTE A INSERERR
 {% endif %}
@@ -411,7 +409,7 @@ TEXTE A INSERERR
 
 ou encore des tests logiques (ici `maVariable` est un booléen) :
 
-```
+```j2
 {% if maVariable and ansible_distribution == 'Centos' %}
 INSERER DU TEXTE
 {% endif %}
@@ -524,7 +522,7 @@ Vous pouvez désormais ressayer la commande `curl`, mais avec du https : `curl h
 1. Qu'est-ce qu'Ansible Vault ? Pourquoi et comment l'utiliser ? Essayez de l'utiliser dans le projet actuel.
 2. Quelles utilisations possibles entre Ansible et un fournisseur cloud (Proxmox, AWS, GCP, ...) ?
 3. Qu'est-ce qu'Ansible-Lint ? Quel intêrét ?
-3. Quel est l'intérêt d'AWX / Ansible Tower ?
+4. Quel est l'intérêt d'AWX / Ansible Tower ?
 
 ## Troubleshoot
 
