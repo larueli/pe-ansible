@@ -98,7 +98,7 @@ Pour récupérer une commande déjà tapée, utilisez les fléches du clavier (H
 
 ### Préparation du controller
 
-Pour démarrer, se connecter sur la machine qui nous servira de controlleur en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i` : sudo permet d'exécuter des commandes en tant qu'administrateur de la machine (utilisateur `root`), `sudo -i` permet d'ouvrir une session root et de la maintenir.
+Pour démarrer, se connecter sur la machine qui nous servira de controlleur (la troisième) en cliquant dessus puis en utilisant les identifiants fournis par l'enseignant, puis mettez vous en root avec `sudo -i` : sudo permet d'exécuter des commandes en tant qu'administrateur de la machine (utilisateur `root`), `sudo -i` permet d'ouvrir une session root et de la maintenir.
 
 Il faut ensuite vous authentifier pour accéder à internet. Tapez les deux lignes suivantes en remplaçant par vos identifiants UTT :
 
@@ -150,6 +150,8 @@ Il faut ensuite installer le serveur SSH qui va nous permettre de prendre le con
 
 Afin de clarifier le terminal, tapez `hostnamectl set-hostname machine1/2` (changez selon le numéro de votre hote), puis `exit` et reconnectez vous. Cela vous aidera à savoir rapidement sur quelle machine vous êtes.
 
+Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2, puis tapez `ip a sh | grep inet`. Le caractère `|` est composé en appuyant sur Alt Gr + 6. Deux adresse s'affichent normalement, une en 127.0.0.1 qui ne nous intéresse pas, car elle est locale, et une autre en `10.100.X.Y`. Notez bien cette dernière IP pour chaque machine.
+
 #### Vérification
 
 Revenez sur votre controlleur (3éme machine) et testez la connexion sur vos autres machines en faisant `ssh administrateur@IP` avec l'IP de chaque hôte. Confirmez éventuellement les clefs (`yes`). Une fois la connexion établie, vous pouvez constater que votre invite a changé de `root@machine3` à `administrateur@machine1/2`, preuve que vous êtes bien sur une machine différente. Tapez `exit` pour revenir sur votre controller.
@@ -182,11 +184,9 @@ Toutes les machines font également partie du groupe spécial `all` qui n'a pas 
 
 On définit des variables dans l'inventaire. Certaines sont propres à vos besoins, certaines sont propres à Ansible. Un exemple, la variable `ansible_host` permet de définir l'IP réelle d'une machine.
 
-Pour connaitre vos adresses IP, ouvrez un terminal sur les deux machines 1 et 2, puis tapez `ip a sh | grep inet`. Le caractère `|` est composé en appuyant sur Alt Gr + 6. Deux adresse s'affichent normalement, une en 127.0.0.1 qui ne nous intéresse pas, car elle est locale, et une autre en `10.100.X.Y`. Notez bien cette dernière IP.
+Si vous allez dans `inventory/host_vars/machine1/main.yml`, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
 
-Si vous allez dans `inventory/host_vars/machine1/main.yml`, vous pourrez voir que la variable `ansible_host` attend une valeur. Sur le controller, faites `nano inventory/host_vars/machine1/main.yml` et ajoutez l'IP de la machine1 dans la variable `ansible_host` et dans la variable `mediawiki_url` et faites de même pour machine2 dans le dossier correspondant. Pour quitter l'éditeur de texte nano, les commandes sont affichées en bas : `Ctrl + O puis entrée` pour sauvegarder le fichier, `Ctrl + X` pour quitter.
-
-Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les moudles Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes. Tapez `clear` pour effacer l'écran.
+Modifiez également le fichier `inventory/group_vars/servers/proxy.yml` pour mettre vos paramètres de connexion afin que les modules Ansible puissent se connecter à internet lors de leur exécution sur les machines distantes. Tapez `clear` pour effacer l'écran.
 
 #### L'ordre des variables
 
@@ -212,7 +212,7 @@ Les variables de groupes sont définies dans les fichiers yaml suivants : `inven
 
 ##### Exercice 3
 
-Donc ici, `ansible_host` est bien défini au sein de chaque hôte donc c'est normal. Cela permet des combinaisons intéressantes. Par exemple, dans le fichier group_vars/servers/main.yml, je définis le nom d'utilisateur avec lequel on va se connecter. Comment pourrait-on faire pour changer cette valeur juste pour un hôte (sans supprimer cette ligne dans le fichier de groupe) ?
+Donc ici, `ansible_host` est bien défini au sein de chaque hôte donc c'est normal. Cela permet des combinaisons intéressantes. Par exemple, dans le fichier `group_vars/servers/main.yml`, je définis le nom d'utilisateur avec lequel Ansible va se connecter en SSH dans la variable `ansible_user`. Comment pourrait-on faire pour changer cette valeur juste pour un hôte (sans supprimer cette ligne dans le fichier de groupe) ?
 
 ## Place à l'action
 
@@ -260,7 +260,7 @@ Ouvrez le fichier `init.yml`.
 
 #### Exercice 4
 
-1. Décrivez son contenu. Quel est l'objectif de ce playbook ?
+1. Décrivez les tâches. Quel est l'objectif de ce playbook ?
 2. Quels sont les machines sur lequelles ce playbook va s'exécuter ?
 
 Lancez le playbook en tapant `ansible-playbook init.yml --ask-pass --ask-become-pass`. Explications :
@@ -270,8 +270,8 @@ Lancez le playbook en tapant `ansible-playbook init.yml --ask-pass --ask-become-
 * `--ask-pass` permet de demander le mot de passe de connexion SSH
 * `--ask-become-pass` permet de demander le mot de passe pour utiliser la commande sudo  et exécuter des commandes en administrateur (toutes les tâches indiquées par `become: true`). Nous nous connectons avec l'utilisateur `administrateur`, il nous faut donc demander le mot de passe pour passer en `root`. Il suffit de taper entrée pour reprendre la même valeur que le mot de passe de connexion classique.
 
-3. Décrire ce qui s'affiche à l'écran.
-4. Relancer une deuxième fois le playbook. Quelle différence ?
+3. Décrire ce qui s'affiche à l'écran et mettez une capture d'écran du résultat.
+4. Relancer une deuxième fois le playbook et mettez une capture d'écran du résultat. Quelle différence ?
 
 On constate également que la première tâche est `gather facts`. Cette tâche permet à Ansible de scanner la machine afin de créer des variables qui nous indiquent la version du système d'exploitation, la liste des cartes réseau, ... On s'en sert notamment afin de faire des tâches conditionnelles comme ici.
 
@@ -295,24 +295,24 @@ Autant qu'Ansible le fasse pour nous !
 
 #### Exercice 5
 
-En lisant [la documentation du module authorized_key d'Ansible](https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html), complétez le playbook `init.yml` en vous inspirant des tâches déjà existantes dans le playbook afin d'y ajouter un tâche permettant de s'assurer que notre clef publique autorise la connexion sur l'utilisateur root. Indications :
+En lisant [la documentation du module authorized_key d'Ansible](https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html), complétez le playbook `init.yml` en vous inspirant des tâches déjà existantes dans le playbook afin d'y ajouter une tâche permettant de s'assurer que notre clef publique autorise la connexion sur l'utilisateur root. Indications :
 
 * Le fichier contenant la clef publique correspond au chemin que vous avez noté plus haut lors de création suffixé par `.pub`
 * Pour récupérer le conteu d'un fichier, on peut utiliser la fonction lookup avec le paramètre `file` : `ma_varible: {{ lookup('file', 'chemin_vers_la_fichier' }}`.
 
-Appliquez ensuite le playbook avec la commande vue plus haut. Pour vérifier, testez maintenant sur votre controller :
+Comme indiqué dans la documentation du module, ce dernier appartient à la collection `ansible.posix` qu'il convient d'installer avec la commande suivante : `ansible-galaxy collection install ansible.posix`. Appliquez ensuite le playbook avec la commande vue plus haut. Pour vérifier, testez maintenant sur votre controller :
 
 * Tapez `eval $(ssh-agent)` pour lancer le système qui fournit les clefs privées lors des connexions SSH
 * Il faut ajouter notre clef : `ssh-add /root/.ssh/id_rsa`, vérifier avec `ssh-add -L` qu'une ligne apparait bien pour signaler qu'une clef a été ajoutée.
-* On peut maintenant retenter de se connecter : `ssh root@IP_machine_1/2` et constater qu'on ne nous demande plus de mot de passe de connexion, et quon directement connecté en root sur notre machine ! Désormais, nous pourrons lancer tous nos playbook sans indiquer `--ask-pass --ask-become-pass`.
+* On peut maintenant retenter de se connecter : `ssh root@IP_machine_1/2` et constater qu'on ne nous demande plus de mot de passe de connexion, et qu'on est directement connecté en root sur notre machine ! Désormais, nous pourrons lancer tous nos playbook sans indiquer `--ask-pass --ask-become-pass`.
 
 Dans le fichier `inventory/group_vars/servers/main.yml`, changez `ansible_user: administrateur` par `ansible_user: root`, et relancez le playbook `init.yml` mais sans options : `ansible-playbook init.yml`.
 
 ### Manipulation des rôles
 
-On a pu voir ce qu'était un playbook : on y spécifie des hotes, et des tâches. Le problème, c'est que c'est assez peu portable/ditribuable. Les playbooks sont finalement qu'un ensemble en vrac de fichier yaml. Difficile dans tout ça de distinguer les tâches, les fichiers à copier, les templates, les variables par défaut, ... Et surtout, que distribuer ? Un ensemble de YAML ? Tout bien rangé des dossiers ? Avec quel standard pour la nomenclature des dossiers ?
+On a pu voir ce qu'était un playbook : on y spécifie des hotes, et des tâches. Le problème, c'est que c'est assez peu portable/ditribuable. Les playbooks sont finalement qu'un ensemble en vrac de fichier yaml. Difficile dans tout ça de distinguer les tâches, les fichiers à copier, les templates, les variables par défaut, ... Et surtout, que distribuer ? Un ensemble de YAML ? Tout bien rangé dans des dossiers ? Avec quel standard pour la nomenclature des dossiers ?
 
-Les rôles viennent répondre à cette problèmatique. Voilà comment un role est structuré :
+Les rôles viennent répondre à cette problèmatique. Voilà comment un role est structuré (le premier fichier qui est toujours lu est `main.yml`) :
 
 ```raw
 nom-du-role/
@@ -338,11 +338,9 @@ nom-du-role/
 
 En regardant le chemin d'accès du dossier des rôles dans `ansible.cfg`, puis en regardant dans le dossier en question, indiquer combien il y a de rôles et leurs noms.
 
-Dans ces dossiers, le premier fichier qui est toujours lu est `main.yml`.
+#### Tasks
 
-#### Tâches
-
-Le dossier tâches contient une suite de tâches. On peut séparer les tâches en plusieurs fichiers pour plus de lisibilité. Pour importer des tâches d'un fichier (exemple fictif `config_zsh.yml`), on rajoute cette tâche dans le fichier `main.yml` :
+Le dossier tasks contient les tâches. On peut séparer les tâches en plusieurs fichiers pour plus de lisibilité. Pour importer des tâches d'un fichier (exemple fictif `config_zsh.yml`), on rajoute cette tâche dans le fichier `main.yml` :
 
 ```yml
 - name: Config ZSH
@@ -449,7 +447,7 @@ La [documentation officielle des rôles](https://docs.ansible.com/ansible/latest
 4. Le fichier de configuration de mediawiki ne doit pas être installé sur le serveur avant son premier lancement depuis un naviagteur. Comment cela se traduit-il dans la tâche de configuration de mediawiki ?
 5. Certaines tâches comprennent `loop` et font référence à une variable `item`. Pourquoi ? A quoi ça sert ? N'hésitez pas à vous aider d'internet.
 
-### utiliser un rôle dans un playbook
+### Utiliser un rôle dans un playbook
 
 Dans un playbook, on peut dire à un certain groupe de machines d'exécuter un rôle de la manière suivante :
 
@@ -465,14 +463,14 @@ C'est exactement ce qui est fait dans le plyabook `deploy_mediawiki.yml`. Allez 
 
 Les variables nécessaires au bon déroulement du playbook sont déjà définies. Installez bien les collections:
 
-* `community.mysql` qui permet de manipuler les bases de données avec `ansible-galaxy collection install community.mysql`
-* `community.general` qui contient notamment des modules pour Apache, notre serveur web ave `ansible-galaxy collection install community.general`
+* `community.mysql` qui permet de manipuler les bases de données avec la commande `ansible-galaxy collection install community.mysql`
+* `community.general` qui contient notamment des modules pour Apache, notre serveur web avec la commande `ansible-galaxy collection install community.general`
 
-Lancez ensuite le playbook avec `ansible-playbook deploy_mediawiki.yml`.
+Lancez ensuite le playbook avec `ansible-playbook deploy_mediawiki.yml`. Si demain vous venez rajouter 4 autres machines, il suffit des les ajouter dans le groupe servers dans `inventory/hosts.yml`, de leur créer un dossier `inventory/host_vars/nom_machine` et d'y mettre un fichier yml contenant les mêmes paramètres que les autres machines (IP, ...) et de relancer le playbook ! Ansible nous simplifie vraiment la tâche pour provisionner des machines à la volée.
 
-Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "http://ip_machine" comme URL. Si jamais vous n'avez pas de navigateur, utilisez la commande curl : `curl http://IP_machine1/2 | less` si vous voyez défiler du HTML qui parle de Mediawiki, c'est tout bon ! Bravo !
+Rendez-vous maintenant sur votre navigateur et pour chaque machine tester "http://ip_machine" comme URL. Si jamais vous n'avez pas de navigateur, utilisez la commande curl depuis la machine controller : `curl http://IP_machine1/2 | less` si vous voyez défiler du HTML qui parle de Mediawiki, c'est tout bon ! Bravo !
 
-MediaWiki vous proposera ensuite de récupérer un fichier de configuration appelé `LocalSetting.php`. Téléchargez le, comparez le avec le template du role mediawiki, apportez les corrections nécessaires au template, changez la variable `mediawiki_is_already_installed` à `true` pour la machine configurée et faites de même pour l'autre machine.
+Si vous utilisez un navigateur, MediaWiki vous proposera ensuite de récupérer un fichier de configuration appelé `LocalSetting.php`. Téléchargez le, comparez le avec le template du role mediawiki, apportez les corrections nécessaires au template, changez la variable `mediawiki_is_already_installed` à `true` pour la machine configurée afin de débloquer la tâche de déploiement de la configuration et faites de même pour l'autre machine.
 
 ## Déployer SSL
 
@@ -511,11 +509,11 @@ Maintenant que notre certificat est généré sur machine1, il faut adapter la c
 
 1. Où est actuellement défini le virtualhost (dans quel groupe / quel hote) ?
 2. Si je veux laisser la configuration générale du groupe et faire une configuration spécifique pour une machine, que dois-je faire (quelle variable mettre à quel endroit) ?
-3. Appliquez la question 2 et modifiez la configuration pour y rajouter votre certificat SSL. N'oubliez pas de modifier l'URL de votre mediawiki dans vos variables.
+3. Appliquez la question 2 et modifiez la configuration pour y rajouter votre certificat SSL. Regardez la section SSL dans le template du rôle webserver pour savoir quelles variables ajouter pour un virtualhost SSL. N'oubliez pas de modifier l'URL de votre mediawiki dans vos variables.
 
-Relancez le playbook web.
+Relancez le playbook `deploy_mediawiki.yml`.
 
-Vous pouvez désormais ressayer la commande `curl`, mais avec du https : `curl https://IP_machine_1 | less`. curl devrait se plaindre qu'on ne peut pas faire confiance au certificat. Dans ce cas, recommencer mais avec l'option `--insecure` : `curl --insecure https://IP_machine_1 | less`
+Vous pouvez désormais ressayer la commande `curl` depuis le controller, mais avec du https : `curl https://IP_machine_1 | less`. curl devrait se plaindre qu'on ne peut pas faire confiance au certificat. Dans ce cas, recommencer mais avec l'option `--insecure` : `curl --insecure https://IP_machine_1 | less`
 
 ## Pour aller plus loin
 
