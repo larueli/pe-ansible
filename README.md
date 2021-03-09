@@ -459,7 +459,7 @@ Dans un playbook, on peut dire à un certain groupe de machines d'exécuter un r
   become: true
 ```
 
-C'est exactement ce qui est fait dans le plyabook `deploy_mediawiki.yml`. Allez le voir, et constatez que les trois rôles sont lancés dans ce playbook.
+C'est exactement ce qui est fait dans le playbook `deploy_mediawiki.yml`. Allez le voir, et constatez que les trois rôles sont lancés dans ce playbook.
 
 Les variables nécessaires au bon déroulement du playbook sont déjà définies. Installez bien les collections:
 
