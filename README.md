@@ -517,7 +517,7 @@ Vous pouvez désormais ressayer la commande `curl` depuis le controller, mais av
 
 ## Pour aller plus loin
 
-1. Qu'est-ce qu'Ansible Vault ? Pourquoi et comment l'utiliser ? Essayez de l'utiliser dans le projet actuel.
+1. Qu'est-ce qu'Ansible Vault ? Pourquoi et comment l'utiliser ? Essayez de l'utiliser dans le projet actuel. Que pouvez dire du fichier correction.md ?
 2. Quelles utilisations possibles entre Ansible et un fournisseur cloud (Proxmox, AWS, GCP, ...) ?
 3. Qu'est-ce qu'Ansible-Lint ? Quel intêrét ?
 4. Quel est l'intérêt d'AWX / Ansible Tower ?
